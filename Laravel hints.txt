@@ -1,0 +1,103 @@
+return redirect("url_to_the_view");
+
+// to get url is the blade we use this
+ {{URL::current()}}
+
+// to perform action in the form action part 
+<form action ="{{URL::to("/save_data")}} " method= "post">
+
+//to include other view in a view we can use @include('nameOfTheView')
+
+// to use get the data without creating view we use inline blade   Blade::render({{$data}}, "data"=> '%thevalue that we  need to get')
+// use Illuminate\Support\Facades\Blade;    BE SURE TO ADD THIS IN THE HEADER
+
+public function productlist(){
+    $noOfProducts = 40;
+return Blade::render('<h1> the number of product is ={{$total}} </h1>',['total'=>$noOfProducts]);
+    //return "product ka ho list he";
+}
+
+// to get the input that we had submitted in the form we use this in the CONTROLLER
+public function addform(Request $req){
+   return $req ->input();  make a req variable then ask for the input
+ }
+
+//for an INPUT in a form to be necessary use this in CONTROLLER
+public function addform(Request $req){
+    $req ->validate([
+        'username'=>'required']);
+
+   return $req ->input();
+ }
+
+
+//THIS IS HOW WE WILL SHOW THE ERRORS FOR A VALIDATED FORM 
+<h1>Add you form</h1>
+{{$errors}}  /// HERE IS THE FIRST WAY
+<form action="form" method="POST">
+    @csrf
+<input type="text" name="username" placeholder="add user id "> <br>
+<br>
+<input type="password" name="userpassword" placeholder="write you pass"> <br>
+
+<br><button type ="submit">Login</button>
+</form>
+   // SECOND WAY IS IN LIST VIEW
+  @if($errors->any())
+@foreach($errors->all() as $err)
+<li> {{$err}}  </li>
+@endforeach
+@endif
+
+
+//FOR MIDDLEWARE  THREE TYPES-- GLOBAL , GROUP AND ROUTE MIDDLEWARE
+	FOR GROUP -- ADD THE MIDDLEWARE NAME IS THE KERNAL 
+			IN THE MIDDLEWARE -> 
+ public function handle(Request $request, Closure $next): Response
+    {
+       if($request->age && $request->age<18)
+       {
+        return redirect("grpnoaccess");
+       }
+        return $next($request);
+    }
+		// NO SPECIFIC THING WAS REQUIRED TO DO IN THE WEB.PHP 
+
+
+//FOR GROUP -- ADD THE MIDDLEWARE NAME IN THE KERNAL OF THE GROUP SECTION
+  'protectedGroupAsh' =>  [
+            // adding the middle ware
+            \App\Http\Middleware\CheckMiddleware::class,
+        ],
+IN THE MIDDLEWARE SAME AS GROUP-> 
+ public function handle(Request $request, Closure $next): Response
+    {
+       if($request->age && $request->age<18)
+       {
+        return redirect("grpnoaccess");
+       }
+        return $next($request);
+    }
+
+// IN THE WEB.PHP WE ADD LIKE THIS THE PAGES WE WANT TO ADD
+Route::group(['middleware'=>['protectedGroupAsh']] , function(){
+// I WANTED TO ADD THIS ROUTE SO THE MIDDLEWARE LOGIC WILL WE APPLICABLE TO THIS ONLY
+    Route::view('grpuser','grpuser');
+} );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -85,9 +85,25 @@ Route::group(['middleware'=>['protectedGroupAsh']] , function(){
     Route::view('grpuser','grpuser');
 } );
 
+// For the session to get the names 
+// after filling the data in the form
+// in the controller 
+$data= $req->input();
+$req->session()->put('good',$data['name']);
+ return redirect('profile') ;
+}
 
+// inside the blade
+{{session('good')}}
 
-
+//and for the logout part we do this in the web
+Route::get('/logout', function () {
+    if(session()->has('good'))
+    {
+        session()->pull('good');
+    }
+    return redirect('horror');
+});
 
 
 
